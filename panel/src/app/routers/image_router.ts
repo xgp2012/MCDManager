@@ -26,7 +26,7 @@ router.post(
         ctx.request.body;
       if (type !== "docker" && type !== "preset") {
         ctx.status = 400;
-        ctx.body = new Error("Type must be 'docker' or 'preset'");
+        ctx.body = { error: $t("TXT_CODE_image.invalidType") };
         return;
       }
       const createdBy = getUserUuid(ctx);
@@ -42,7 +42,8 @@ router.post(
       });
       ctx.body = result;
     } catch (err) {
-      ctx.body = err;
+      ctx.status = 500;
+      ctx.body = { error: $t("TXT_CODE_image.createFailed") };
     }
   }
 );
@@ -62,12 +63,13 @@ router.put(
       const result = await imageService.update(uuid, config);
       if (!result) {
         ctx.status = 404;
-        ctx.body = new Error($t("TXT_CODE_image.notFound"));
+        ctx.body = { error: $t("TXT_CODE_image.notFound") };
         return;
       }
       ctx.body = result;
     } catch (err) {
-      ctx.body = err;
+      ctx.status = 500;
+      ctx.body = { error: $t("TXT_CODE_image.updateFailed") };
     }
   }
 );
@@ -85,12 +87,13 @@ router.delete(
       const success = await imageService.delete(uuid);
       if (!success) {
         ctx.status = 404;
-        ctx.body = new Error($t("TXT_CODE_image.notFound"));
+        ctx.body = { error: $t("TXT_CODE_image.notFound") };
         return;
       }
       ctx.body = { status: 200, message: "OK" };
     } catch (err) {
-      ctx.body = err;
+      ctx.status = 500;
+      ctx.body = { error: $t("TXT_CODE_image.deleteFailed") };
     }
   }
 );
@@ -103,7 +106,8 @@ router.get(
     try {
       ctx.body = imageService.getAll();
     } catch (err) {
-      ctx.body = err;
+      ctx.status = 500;
+      ctx.body = { error: $t("TXT_CODE_image.listFailed") };
     }
   }
 );
@@ -123,7 +127,8 @@ router.get("/public", permission({ level: ROLE.USER }), speedLimit(0.5), async (
     }
     ctx.body = results;
   } catch (err) {
-    ctx.body = err;
+    ctx.status = 500;
+    ctx.body = { error: $t("TXT_CODE_image.listFailed") };
   }
 });
 
@@ -136,7 +141,8 @@ router.get(
     try {
       ctx.body = imageService.getCategories();
     } catch (err) {
-      ctx.body = err;
+      ctx.status = 500;
+      ctx.body = { error: $t("TXT_CODE_image.listFailed") };
     }
   }
 );

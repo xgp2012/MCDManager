@@ -21,7 +21,7 @@ router.get(
     // Check if user owns this instance
     if (!isHaveInstanceByUuid(getUserUuid(ctx), daemonId, instanceUuid)) {
       ctx.status = 403;
-      ctx.body = "Forbidden";
+      ctx.body = { error: "Forbidden" };
       return;
     }
 

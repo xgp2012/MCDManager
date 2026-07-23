@@ -400,7 +400,9 @@ export const createCardKey = useDefineApi<
 
 export const deleteCardKey = useDefineApi<
   {
-    data: string[];
+    data: {
+      uuid: string;
+    };
   },
   any
 >({
@@ -446,10 +448,10 @@ export const createImage = useDefineApi<
 
 export const updateImage = useDefineApi<
   {
-    params: {
+    data: {
       uuid: string;
+      [key: string]: any;
     };
-    data: any;
   },
   any
 >({
@@ -459,7 +461,9 @@ export const updateImage = useDefineApi<
 
 export const deleteImage = useDefineApi<
   {
-    data: string[];
+    params: {
+      uuid: string;
+    };
   },
   any
 >({
