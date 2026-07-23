@@ -35,7 +35,7 @@ export function initKoa() {
       "Content-Type, Cookie, Accept-Encoding, User-Agent, Host, Referer, " +
         "X-Requested-With, Accept, Accept-Language, Cache-Control, Connection"
     );
-    ctx.response.set("X-Power-by", "MCSManager");
+    ctx.response.set("X-Power-by", "MCDManager");
   });
 
   if (config.prefix != "") {

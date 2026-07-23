@@ -2,15 +2,19 @@ import { $t as t } from "@/lang/i18n";
 import { useAppStateStore } from "@/stores/useAppStateStore";
 import { useLayoutContainerStore } from "@/stores/useLayoutContainerStore";
 import type { LoginUserInfo } from "@/types/user";
+import CardKeyManage from "@/views/CardKeyManage.vue";
+import ImageManage from "@/views/ImageManage.vue";
 import InstallPage from "@/views/Install.vue";
 import LayoutContainer from "@/views/LayoutContainer.vue";
 import LoginPage from "@/views/Login.vue";
+import RedeemCard from "@/views/RedeemCard.vue";
+import RegisterPage from "@/views/Register.vue";
 import SsoBindLogin from "@/views/SsoBindLogin.vue";
 import {
-  createRouter,
-  createWebHashHistory,
-  type RouteLocationNormalized,
-  type RouteRecordRaw
+    createRouter,
+    createWebHashHistory,
+    type RouteLocationNormalized,
+    type RouteRecordRaw
 } from "vue-router";
 
 export interface RouterMetaInfo {
@@ -259,6 +263,24 @@ const originRouterConfig: RouterConfig[] = [
     }
   },
   {
+    path: "/card-key",
+    name: t("TXT_CODE_cardKey.manage"),
+    component: CardKeyManage,
+    meta: {
+      permission: ROLE.ADMIN,
+      mainMenu: true
+    }
+  },
+  {
+    path: "/images",
+    name: t("TXT_CODE_image.manage"),
+    component: ImageManage,
+    meta: {
+      permission: ROLE.ADMIN,
+      mainMenu: true
+    }
+  },
+  {
     path: "/user",
     name: t("TXT_CODE_8c3164c9"),
     component: LayoutContainer,
@@ -327,6 +349,25 @@ const originRouterConfig: RouterConfig[] = [
         const { state: appConfig } = useAppStateStore();
         return appConfig.settings.businessMode;
       }
+    }
+  },
+  {
+    path: "/register",
+    name: t("TXT_CODE_register.title"),
+    component: RegisterPage,
+    meta: {
+      permission: ROLE.GUEST,
+      mainMenu: false,
+      onlyDisplayEditMode: true
+    }
+  },
+  {
+    path: "/redeem",
+    name: t("TXT_CODE_redeem.title"),
+    component: RedeemCard,
+    meta: {
+      permission: ROLE.USER,
+      mainMenu: false
     }
   }
 ];
@@ -407,7 +448,7 @@ router.beforeEach(async (to, from, next) => {
   if (
     toRoutePath.includes("_open_page") ||
     toRoutePath.startsWith("/sso/") ||
-    ["/shop", "/login", "/install", "/404"].includes(toRoutePath)
+    ["/shop", "/login", "/register", "/install", "/404"].includes(toRoutePath)
   ) {
     return next();
   }

@@ -1,5 +1,5 @@
 {
-  "name": "mcsmanager-panel",
+  "name": "mcdmanager-panel",
   "version": "10.17.0",
   "daemonVersion": "4.17.0",
   "description": "Provide MCSManager with the ability to connect and control all Daemons, and provide API services for the front end.",

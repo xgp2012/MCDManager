@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getVersion } from "../version";
 
-// This function module is used for MCSManager user statistics,
+// This function module is used for MCDManager user statistics,
 // the purpose is to know the number of existing daily activities and installations.
 // User statistics will not send any private data, user data, system information, etc.
 const st = new Date().getTime();

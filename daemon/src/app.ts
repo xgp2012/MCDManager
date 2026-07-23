@@ -37,7 +37,7 @@ _  /_/ // /_/ //  __/  / / / / / /_/ /  / / /
 /_____/ \\__,_/ \\___//_/ /_/ /_/\\____//_/ /_/                                 
                                                                              
 
- + Copyright ${new Date().getFullYear()} MCSManager Dev <https://github.com/MCSManager>
+ + Copyright ${new Date().getFullYear()} MCDManager Dev <https://github.com/xgp2012/MCDManager>
  + Version ${VERSION}
 `);
 

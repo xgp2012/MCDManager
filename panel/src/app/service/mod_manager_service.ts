@@ -771,7 +771,7 @@ class ModManagerService {
           sort: "-updateDate"
         },
         headers: {
-          "User-Agent": "MCSManager"
+          "User-Agent": "MCDManager"
         },
         validateStatus: (status: number) => (status >= 200 && status < 300) || status === 404
       });
@@ -802,7 +802,7 @@ class ModManagerService {
                     url: `https://api.spiget.org/v2/resources/${item.id}/versions/${item.version.id}`,
                     timeout: 4000,
                     headers: {
-                      "User-Agent": "MCSManager"
+                      "User-Agent": "MCDManager"
                     }
                   });
                   if (vRes.data?.name) {
@@ -855,7 +855,7 @@ class ModManagerService {
           method: "GET",
           url: `https://api.spiget.org/v2/resources/${projectId}`,
           headers: {
-            "User-Agent": "MCSManager"
+            "User-Agent": "MCDManager"
           }
         });
         resourceName = resourceRes.data.name;
@@ -866,7 +866,7 @@ class ModManagerService {
         url: `https://api.spiget.org/v2/resources/${projectId}/versions`,
         params: { size: 100 },
         headers: {
-          "User-Agent": "MCSManager"
+          "User-Agent": "MCDManager"
         }
       });
       const versions = res.data;

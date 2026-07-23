@@ -308,3 +308,185 @@ export const ssoUnbind = useDefineApi<
   url: "/api/auth/sso/unbind",
   method: "PUT"
 });
+
+export const registerUser = useDefineApi<
+  {
+    data: {
+      username: string;
+      password: string;
+    };
+  },
+  {
+    token: string;
+    userName: string;
+  }
+>({
+  url: "/api/auth/register",
+  method: "POST"
+});
+
+export const validateCardKey = useDefineApi<
+  {
+    params: {
+      code: string;
+    };
+  },
+  {
+    valid: boolean;
+    message: string;
+    cardKey?: {
+      code: string;
+      name: string;
+      config: any;
+      duration: number;
+    };
+  }
+>({
+  url: "/api/card_key/validate",
+  method: "GET"
+});
+
+export const redeemCardKey = useDefineApi<
+  {
+    data: {
+      code: string;
+      daemonId: string;
+    };
+  },
+  {
+    success: boolean;
+    instanceUuid?: string;
+    message?: string;
+  }
+>({
+  url: "/api/card_key/redeem",
+  method: "POST"
+});
+
+export const getCardKeys = useDefineApi<
+  {
+    params: {
+      page: number;
+      page_size: number;
+    };
+  },
+  {
+    page: number;
+    pageSize: number;
+    maxPage: number;
+    total: number;
+    data: any[];
+  }
+>({
+  url: "/api/card_key",
+  method: "GET"
+});
+
+export const createCardKey = useDefineApi<
+  {
+    data: {
+      name: string;
+      config: any;
+      duration: number;
+      maxUsage: number;
+      remarks: string;
+    };
+  },
+  any
+>({
+  url: "/api/card_key",
+  method: "POST"
+});
+
+export const deleteCardKey = useDefineApi<
+  {
+    data: string[];
+  },
+  any
+>({
+  url: "/api/card_key",
+  method: "DELETE"
+});
+
+export const getImages = useDefineApi<
+  {
+    params?: {
+      type?: string;
+      category?: string;
+    };
+  },
+  any[]
+>({
+  url: "/api/image/public",
+  method: "GET"
+});
+
+export const getAdminImages = useDefineApi<any, any[]>({
+  url: "/api/image",
+  method: "GET"
+});
+
+export const createImage = useDefineApi<
+  {
+    data: {
+      name: string;
+      description: string;
+      type: string;
+      imageUrl: string;
+      icon: string;
+      category: string;
+      defaultConfig: any;
+    };
+  },
+  any
+>({
+  url: "/api/image",
+  method: "POST"
+});
+
+export const updateImage = useDefineApi<
+  {
+    params: {
+      uuid: string;
+    };
+    data: any;
+  },
+  any
+>({
+  url: "/api/image",
+  method: "PUT"
+});
+
+export const deleteImage = useDefineApi<
+  {
+    data: string[];
+  },
+  any
+>({
+  url: "/api/image",
+  method: "DELETE"
+});
+
+export const getImageCategories = useDefineApi<any, string[]>({
+  url: "/api/image/categories",
+  method: "GET"
+});
+
+export const getExpirationInfo = useDefineApi<
+  {
+    params: {
+      daemonId: string;
+      uuid: string;
+    };
+  },
+  {
+    endTime: number;
+    isExpired: boolean;
+    daysUntilExpiry: number;
+    isInGracePeriod: boolean;
+    gracePeriodEnd: number;
+  } | null
+>({
+  url: "/api/expiration/info",
+  method: "GET"
+});

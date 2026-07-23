@@ -152,4 +152,51 @@ router.all(
   }
 );
 
+// [Public Permission]
+// User registration
+router.post(
+  "/register",
+  permission({ token: false, level: null }),
+  validator({ body: { username: String, password: String } }),
+  async (ctx: Koa.ParameterizedContext) => {
+    const userName = String(ctx.request.body.username);
+    const passWord = String(ctx.request.body.password);
+    
+    // Validate username
+    if (userName.length < 3 || userName.length > 20) {
+      throw new Error($t("TXT_CODE_router.user.usernameLength"));
+    }
+    
+    // Validate password strength
+    if (!userSystem.validatePassword(passWord)) {
+      throw new Error($t("TXT_CODE_router.user.passwordCheck"));
+    }
+    
+    // Check duplicate username
+    if (userSystem.existUserName(userName)) {
+      throw new Error($t("TXT_CODE_router.user.existsUserName"));
+    }
+    
+    // Create user with ROLE.USER permission
+    await userSystem.create({
+      userName,
+      passWord,
+      permission: ROLE.USER
+    });
+    
+    // Auto-login after registration
+    const token = login(ctx, userName, passWord);
+    
+    operationLogger.log("user_register", {
+      operator_ip: ctx.ip,
+      operator_name: userName
+    });
+    
+    ctx.body = {
+      token,
+      userName
+    };
+  }
+);
+
 export default router;

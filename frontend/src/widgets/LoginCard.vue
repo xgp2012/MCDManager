@@ -235,7 +235,7 @@ onMounted(async () => {
                   ></div>
                   Powered by
                   <a href="https://mcsmanager.com" target="_blank" rel="noopener noreferrer">
-                    MCSManager
+                    MCDManager
                   </a>
                 </div>
                 <div v-else></div>
@@ -258,6 +258,12 @@ onMounted(async () => {
                     {{ t("TXT_CODE_d2c1a316") }}
                   </a-button>
                 </div>
+              </div>
+
+              <div class="mt-16 register-link-container">
+                <a-button type="link" size="small" @click="router.push('/register')">
+                  {{ t("TXT_CODE_register.loginLink") }}
+                </a-button>
               </div>
 
               <div v-if="ssoInfo?.enabled && !ssoInfo?.onlyMode" class="sso-divider-section">

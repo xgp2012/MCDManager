@@ -14,19 +14,19 @@ import { arrayFilter } from "@/tools/array";
 import { reportErrorMsg } from "@/tools/validator";
 import type { LayoutCard, Settings } from "@/types";
 import {
-  ApiOutlined,
-  BankOutlined,
-  BookOutlined,
-  BugOutlined,
-  EditOutlined,
-  GithubOutlined,
-  LockOutlined,
-  MessageOutlined,
-  MoneyCollectOutlined,
-  PicLeftOutlined,
-  PlusOutlined,
-  ProjectOutlined,
-  QuestionCircleOutlined
+    ApiOutlined,
+    BankOutlined,
+    BookOutlined,
+    BugOutlined,
+    EditOutlined,
+    GithubOutlined,
+    LockOutlined,
+    MessageOutlined,
+    MoneyCollectOutlined,
+    PicLeftOutlined,
+    PlusOutlined,
+    ProjectOutlined,
+    QuestionCircleOutlined
 } from "@ant-design/icons-vue";
 import { Modal, message, notification } from "ant-design-vue";
 import { computed, onMounted, onUnmounted, ref } from "vue";
@@ -54,7 +54,7 @@ const sidebarPositionOptions = [
   { label: t("TXT_CODE_SETTINGS_LAYOUT_SIDEBAR_POSITION_RIGHT"), value: "right" as const }
 ];
 
-const ApacheLicense = `Copyright ${new Date().getFullYear()} MCSManager
+const ApacheLicense = `Copyright ${new Date().getFullYear()} MCDManager
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -179,7 +179,7 @@ const aboutLinks = arrayFilter([
   {
     title: "GitHub",
     icon: GithubOutlined,
-    url: "https://github.com/MCSManager/MCSManager"
+    url: "https://github.com/xgp2012/MCDManager"
   },
   {
     title: "Discord",
@@ -202,7 +202,7 @@ const contacts = arrayFilter([
   {
     title: t("TXT_CODE_26407d1f"),
     icon: BugOutlined,
-    url: "https://github.com/MCSManager/MCSManager/issues"
+    url: "https://github.com/xgp2012/MCDManager/issues"
   }
 ]);
 

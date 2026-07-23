@@ -17,6 +17,9 @@ import { $t } from "./app/i18n";
 import { mountRouters } from "./app/index";
 import { preCheckMiddleware } from "./app/middleware/precheck";
 import { middleware as protocolMiddleware } from "./app/middleware/protocol";
+import SystemCardKey from "./app/service/card_key_service";
+import SystemImage from "./app/service/image_service";
+import instanceExpirationService from "./app/service/instance_expiration_service";
 import { logger } from "./app/service/log";
 import SystemRemoteService from "./app/service/remote_service";
 import SystemUser from "./app/service/user_service";
@@ -112,7 +115,7 @@ _  /  / / / /___  ____/ /_  /  / / / /_/ /_  / / / /_/ /_  /_/ //  __/  /
 /_/  /_/  \\____/  /____/ /_/  /_/  \\__,_/ /_/ /_/\\__,_/ _\\__, / \\___//_/     
                                                         /____/     
 
- + Copyright ${new Date().getFullYear()} MCSManager Dev <https://github.com/MCSManager>
+ + Copyright ${new Date().getFullYear()} MCDManager Dev <https://github.com/xgp2012/MCDManager>
  + Version ${VERSION}
 `);
 
@@ -123,7 +126,10 @@ _  /  / / / /___  ____/ /_  /  / / / /_/ /_  / / / /_/ /_  /_/ //  __/  /
 
   // Initialize services
   await SystemUser.initialize();
+  await SystemCardKey.initialize();
+  await SystemImage.initialize();
   await SystemRemoteService.initialize();
+  instanceExpirationService.start();
 
   const app = new Koa({
     proxy: systemConfig?.reverseProxyMode || false,

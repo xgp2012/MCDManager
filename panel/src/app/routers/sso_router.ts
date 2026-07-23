@@ -186,7 +186,7 @@ router.get(
   }
 );
 
-// [Public] Bind SSO to existing MCSManager account
+// [Public] Bind SSO to existing MCDManager account
 router.post(
   "/bind",
   permission({ token: false, level: null }),

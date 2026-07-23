@@ -21,8 +21,12 @@ export enum OperationLoggerAction {
   UserDelete = "user_delete",
   UserConfigChange = "user_config_change",
   UserLogin = "user_login",
+  UserRegister = "user_register",
   SsoUnbind = "sso_unbind",
-  SystemConfigChange = "system_config_change"
+  SystemConfigChange = "system_config_change",
+  CardKeyCreate = "card_key_create",
+  CardKeyDelete = "card_key_delete",
+  CardKeyRedeem = "card_key_redeem"
 }
 
 export type GlobalGeneralOptions = {
@@ -142,9 +146,30 @@ export type UserLoginOptions = {
   login_method?: string;
 } & GlobalGeneralOptions;
 
+export type UserRegisterOptions = {
+  type: "user_register";
+} & GlobalGeneralOptions;
+
 export type SsoUnbindOptions = {
   type: "sso_unbind";
   target_user_name: string;
+} & GlobalGeneralOptions;
+
+export type CardKeyCreateOptions = {
+  type: "card_key_create";
+  card_key_name: string;
+} & GlobalGeneralOptions;
+
+export type CardKeyDeleteOptions = {
+  type: "card_key_delete";
+  card_key_name: string;
+  card_key_code: string;
+} & GlobalGeneralOptions;
+
+export type CardKeyRedeemOptions = {
+  type: "card_key_redeem";
+  card_key_name: string;
+  card_key_code: string;
 } & GlobalGeneralOptions;
 
 export type SystemConfigChangeOptions = {
@@ -174,7 +199,11 @@ export type OperationLoggerItem =
   | UserDeleteOptions
   | UserConfigChangeOptions
   | UserLoginOptions
+  | UserRegisterOptions
   | SsoUnbindOptions
+  | CardKeyCreateOptions
+  | CardKeyDeleteOptions
+  | CardKeyRedeemOptions
   | SystemConfigChangeOptions;
 
 export type OperationLoggerItemPayload = {
