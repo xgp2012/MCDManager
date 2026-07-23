@@ -173,7 +173,7 @@ router.post(
 
     // Assign the instance to the user
     try {
-      const user = userSystem.getUser(userUuid);
+      const user = userSystem.getUserByUuid(userUuid);
       if (user) {
         const instances = user.instances || [];
         instances.push({

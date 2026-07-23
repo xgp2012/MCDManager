@@ -170,6 +170,7 @@ export type CardKeyRedeemOptions = {
   type: "card_key_redeem";
   card_key_name: string;
   card_key_code: string;
+  instance_uuid: string;
 } & GlobalGeneralOptions;
 
 export type SystemConfigChangeOptions = {
