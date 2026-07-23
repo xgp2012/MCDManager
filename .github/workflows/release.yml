@@ -12,14 +12,28 @@ on:
         default: false
         type: boolean
 
+permissions:
+  contents: write
+  actions: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
+      release_tag: ${{ steps.set_tag.outputs.release_tag }}
       has_release: ${{ steps.check_release.outputs.has_release }}
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set release tag
+        id: set_tag
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            echo "release_tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "release_tag=build-$(date +%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
+          fi
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -100,13 +114,36 @@ jobs:
             echo "has_release=false" >> $GITHUB_OUTPUT
           fi
 
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    if: needs.build.outputs.has_release == 'true'
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: mcdmanager-build
+
+      - name: List files
+        run: ls -la
+
+      - name: Determine release tag
+        id: tag
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=build-${{ github.run_id }}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Create GitHub Release
-        if: steps.check_release.outputs.has_release == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          name: MCDManager ${{ github.ref_name }}
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: MCDManager ${{ steps.tag.outputs.tag }}
           body: |
-            ## MCDManager ${{ github.ref_name }}
+            ## MCDManager ${{ steps.tag.outputs.tag }}
 
             自动构建发布。
 
@@ -131,3 +168,5 @@ jobs:
             mcdmanager_windows_release.zip
             mcdmanager_windows_web_only_release.zip
             mcdmanager_windows_daemon_only_release.zip
+          fail_on_unmatched_files: false
+          generate_release_notes: true
