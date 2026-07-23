@@ -24,7 +24,6 @@ const showCreateModal = ref(false);
 const createForm = reactive({
   name: "",
   duration: 30,
-  maxUsage: 1,
   config: {
     processType: "general" as string,
     instanceType: "universal",
@@ -33,6 +32,8 @@ const createForm = reactive({
     dockerCpuUsage: 100,
     dockerMaxSpace: 10,
     dockerPorts: [] as Array<{ containerPort: number; protocol: string }>,
+    uploadSpeedLimit: 0,
+    downloadSpeedLimit: 0,
     startCommand: "",
     memoryLimit: 0,
     diskLimit: 0,
@@ -81,23 +82,20 @@ const handleCreate = async () => {
   if (!createForm.name.trim()) {
     return message.error(t("TXT_CODE_cardKey.enterName"));
   }
-  if (!createForm.expiredAt) {
-    return message.error(t("TXT_CODE_cardKey.enterExpiredAt"));
-  }
   try {
-    const expiredAtStr = typeof createForm.expiredAt === "object"
-      ? (createForm.expiredAt as any).format("YYYY-MM-DD")
-      : String(createForm.expiredAt);
-    await createKey({
-      data: {
-        name: createForm.name,
-        config: createForm.config,
-        duration: createForm.duration,
-        maxUsage: createForm.maxUsage,
-        expiredAt: expiredAtStr,
-        remarks: createForm.remarks
-      }
-    });
+    const data: any = {
+      name: createForm.name,
+      config: createForm.config,
+      duration: createForm.duration,
+      remarks: createForm.remarks
+    };
+    // Only send expiredAt if it's set (optional)
+    if (createForm.expiredAt) {
+      data.expiredAt = typeof createForm.expiredAt === "object"
+        ? (createForm.expiredAt as any).format("YYYY-MM-DD")
+        : String(createForm.expiredAt);
+    }
+    await createKey({ data });
     message.success(t("TXT_CODE_cardKey.createSuccess"));
     showCreateModal.value = false;
     await loadCardKeys();
@@ -179,12 +177,11 @@ onMounted(() => {
         <a-form-item :label="t('TXT_CODE_cardKey.duration')">
           <a-input-number v-model:value="createForm.duration" :min="1" :max="3650" />
           <span class="ml-8">{{ t("TXT_CODE_cardKey.days") }}</span>
-        </a-form-item>
-        <a-form-item :label="t('TXT_CODE_cardKey.maxUsage')">
-          <a-input-number v-model:value="createForm.maxUsage" :min="1" :max="9999" />
+          <span class="ml-8" style="color: #888;">({{ t("TXT_CODE_cardKey.instanceDuration") }})</span>
         </a-form-item>
         <a-form-item :label="t('TXT_CODE_cardKey.expiredAt')">
           <a-date-picker v-model:value="createForm.expiredAt" style="width: 100%" />
+          <span class="ml-8" style="color: #888;">({{ t("TXT_CODE_cardKey.optionalExpiry") }})</span>
         </a-form-item>
         <a-form-item :label="t('TXT_CODE_cardKey.processType')">
           <a-select v-model:value="createForm.config.processType">
@@ -206,6 +203,14 @@ onMounted(() => {
         <a-form-item :label="t('TXT_CODE_cardKey.disk')">
           <a-input-number v-model:value="createForm.config.dockerMaxSpace" :min="1" :max="99999" />
           <span class="ml-8">GB</span>
+        </a-form-item>
+        <a-form-item :label="t('TXT_CODE_cardKey.uploadSpeed')">
+          <a-input-number v-model:value="createForm.config.uploadSpeedLimit" :min="0" :max="1000000" />
+          <span class="ml-8">KB/s (0 = unlimited)</span>
+        </a-form-item>
+        <a-form-item :label="t('TXT_CODE_cardKey.downloadSpeed')">
+          <a-input-number v-model:value="createForm.config.downloadSpeedLimit" :min="0" :max="1000000" />
+          <span class="ml-8">KB/s (0 = unlimited)</span>
         </a-form-item>
         <a-form-item :label="t('TXT_CODE_cardKey.remarks')">
           <a-textarea v-model:value="createForm.remarks" :rows="2" />

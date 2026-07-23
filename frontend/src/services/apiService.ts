@@ -115,9 +115,15 @@ class ApiService {
       const axiosErr = error as AxiosError;
       const otherErr = error as Error | any;
       if (axiosErr?.response?.data) {
-        const protocol = axiosErr?.response?.data as IPanelResponseProtocol;
-        if (protocol.data && protocol.status !== 200) {
-          this.throwRequestError(reqId, String(protocol.data));
+        const responseData: any = axiosErr?.response?.data;
+        // Handle backend error response format: { error: "message" }
+        if (responseData.error) {
+          this.throwRequestError(reqId, String(responseData.error));
+          return;
+        }
+        // Handle standard protocol format: { status: number, data: any }
+        if (responseData.data && responseData.status !== 200) {
+          this.throwRequestError(reqId, String(responseData.data));
           return;
         }
       }

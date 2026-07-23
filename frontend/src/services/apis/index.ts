@@ -388,8 +388,7 @@ export const createCardKey = useDefineApi<
       name: string;
       config: any;
       duration: number;
-      maxUsage: number;
-      expiredAt: string;
+      expiredAt?: string;
       remarks: string;
     };
   },

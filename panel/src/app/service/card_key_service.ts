@@ -34,9 +34,8 @@ class CardKeySubsystem {
     name: string;
     config: ICardKeyConfig;
     duration: number;
-    maxUsage: number;
     createdBy: string;
-    expiredAt: string;
+    expiredAt?: string;
     remarks: string;
   }): Promise<CardKey> {
     const newUuid = v4().replace(/-/gim, "");
@@ -46,12 +45,11 @@ class CardKeySubsystem {
     cardKey.name = config.name;
     cardKey.config = config.config;
     cardKey.duration = config.duration;
-    cardKey.maxUsage = config.maxUsage || 1;
     cardKey.usedCount = 0;
     cardKey.createdBy = config.createdBy;
     cardKey.createdAt = new Date().toISOString();
     cardKey.isActive = true;
-    cardKey.expiredAt = config.expiredAt;
+    cardKey.expiredAt = config.expiredAt || "";
     cardKey.remarks = config.remarks || "";
 
     this.objects.set(newUuid, cardKey);
@@ -65,9 +63,8 @@ class CardKeySubsystem {
     if (config.name) cardKey.name = config.name;
     if (config.config) cardKey.config = { ...cardKey.config, ...config.config };
     if (config.duration) cardKey.duration = config.duration;
-    if (config.maxUsage) cardKey.maxUsage = config.maxUsage;
     if (config.isActive !== undefined) cardKey.isActive = config.isActive;
-    if (config.expiredAt) cardKey.expiredAt = config.expiredAt;
+    if (config.expiredAt !== undefined) cardKey.expiredAt = config.expiredAt;
     if (config.remarks !== undefined) cardKey.remarks = config.remarks;
 
     await Storage.getStorage().store("CardKey", uuid, cardKey);
@@ -91,11 +88,13 @@ class CardKeySubsystem {
         if (!cardKey.isActive) {
           return { valid: false, message: $t("TXT_CODE_cardKey.inactive") };
         }
+        // Card key has already been used (single-use)
+        if (cardKey.usedCount >= 1) {
+          return { valid: false, message: $t("TXT_CODE_cardKey.maxUsage") };
+        }
+        // Only check expiredAt if it's set (optional field)
         if (cardKey.expiredAt && new Date(cardKey.expiredAt) < new Date()) {
           return { valid: false, message: $t("TXT_CODE_cardKey.expired") };
-        }
-        if (cardKey.usedCount >= cardKey.maxUsage) {
-          return { valid: false, message: $t("TXT_CODE_cardKey.maxUsage") };
         }
         return { valid: true, message: "", cardKey };
       }
@@ -103,15 +102,13 @@ class CardKeySubsystem {
     return { valid: false, message: $t("TXT_CODE_cardKey.notFound") };
   }
 
-  // Redeem a card key (increment usage count)
+  // Redeem a card key (single-use only)
   async redeemCode(code: string): Promise<CardKey | null> {
     const result = this.validateCode(code);
     if (!result.valid || !result.cardKey) return null;
 
-    result.cardKey.usedCount++;
-    if (result.cardKey.usedCount >= result.cardKey.maxUsage) {
-      result.cardKey.isActive = false;
-    }
+    result.cardKey.usedCount = 1;
+    result.cardKey.isActive = false;
 
     await Storage.getStorage().store("CardKey", result.cardKey.uuid, result.cardKey);
     return result.cardKey;

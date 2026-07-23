@@ -22,13 +22,11 @@ router.post(
     body: {
       name: String,
       duration: Number,
-      maxUsage: Number,
-      expiredAt: String,
       config: Object
     }
   }),
   async (ctx: Koa.ParameterizedContext) => {
-    const { name, duration, maxUsage, expiredAt, config, remarks } = ctx.request.body as any;
+    const { name, duration, expiredAt, config, remarks } = ctx.request.body as any;
     const createdBy = ctx.session?.["uuid"] || "";
 
     operationLogger.log("card_key_create", {
@@ -41,9 +39,8 @@ router.post(
       name,
       config,
       duration,
-      maxUsage: maxUsage || 1,
       createdBy,
-      expiredAt,
+      expiredAt: expiredAt || undefined,
       remarks: remarks || ""
     });
   }
@@ -138,6 +135,8 @@ router.post(
         cpuUsage: config.dockerCpuUsage || 100,
         maxSpace: config.dockerMaxSpace || 10,
         ports: config.dockerPorts || [],
+        uploadSpeedLimit: config.uploadSpeedLimit || 0,
+        downloadSpeedLimit: config.downloadSpeedLimit || 0,
         env: [] as string[]
       };
     }
