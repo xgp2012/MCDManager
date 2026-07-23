@@ -164,17 +164,23 @@ router.post(
     
     // Validate username
     if (userName.length < 3 || userName.length > 20) {
-      throw new Error($t("TXT_CODE_router.user.usernameLength"));
+      ctx.status = 400;
+      ctx.body = { error: $t("TXT_CODE_router.user.usernameLength") };
+      return;
     }
     
     // Validate password strength
     if (!userSystem.validatePassword(passWord)) {
-      throw new Error($t("TXT_CODE_router.user.passwordCheck"));
+      ctx.status = 400;
+      ctx.body = { error: $t("TXT_CODE_router.user.passwordCheck") };
+      return;
     }
     
     // Check duplicate username
     if (userSystem.existUserName(userName)) {
-      throw new Error($t("TXT_CODE_router.user.existsUserName"));
+      ctx.status = 400;
+      ctx.body = { error: $t("TXT_CODE_router.user.existsUserName") };
+      return;
     }
     
     // Create user with ROLE.USER permission

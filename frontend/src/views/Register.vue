@@ -32,14 +32,21 @@ const handleRegister = async () => {
   }
   try {
     loading.value = true;
-    await doRegister({
+    const res = await doRegister({
       data: {
         username: formData.username.trim(),
         password: formData.password
       }
     });
-    message.success(t("TXT_CODE_register.success"));
-    router.push("/login");
+    // Auto-login after registration
+    if (res.value?.token) {
+      localStorage.setItem("authorization", res.value.token);
+      useAppStateStore().updateUserInfo();
+      message.success(t("TXT_CODE_register.success"));
+      router.push("/");
+    } else {
+      router.push("/login");
+    }
   } catch (error: any) {
     reportErrorMsg(error);
   } finally {

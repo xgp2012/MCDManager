@@ -2,10 +2,10 @@
 import CardPanel from "@/components/CardPanel.vue";
 import { router } from "@/config/router";
 import { t } from "@/lang/i18n";
-import { remoteNodeList, validateCardKey, redeemCardKey } from "@/services/apis";
+import { redeemCardKey, remoteNodeList, validateCardKey } from "@/services/apis";
 import { useAppStateStore } from "@/stores/useAppStateStore";
 import { reportErrorMsg } from "@/tools/validator";
-import { KeyOutlined, ServerOutlined, CheckCircleOutlined } from "@ant-design/icons-vue";
+import { CheckCircleOutlined, CloudOutlined, KeyOutlined } from "@ant-design/icons-vue";
 import { message } from "ant-design-vue";
 import { onMounted, reactive, ref } from "vue";
 
@@ -173,7 +173,7 @@ const goToInstances = () => {
                   :key="node.uuid"
                   :value="node.uuid"
                 >
-                  <ServerOutlined /> {{ node.config?.remarks || node.uuid }}
+                  <CloudOutlined /> {{ node.config?.remarks || node.uuid }}
                 </a-select-option>
               </a-select>
 

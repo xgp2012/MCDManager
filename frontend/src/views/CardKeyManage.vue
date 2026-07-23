@@ -52,7 +52,7 @@ const loadCardKeys = async () => {
     if (res.value) {
       cardKeys.value = res.value.data || [];
       pagination.total = res.value.total || 0;
-      pagination.maxPage = res.value.maxPage || 1;
+      pagination.maxPage = Math.ceil((res.value.total || 0) / pagination.pageSize) || 1;
     }
   } catch (error: any) {
     reportErrorMsg(error);
