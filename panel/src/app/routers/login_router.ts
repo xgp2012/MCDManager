@@ -169,10 +169,10 @@ router.post(
       return;
     }
     
-    // Validate password strength
-    if (!userSystem.validatePassword(passWord)) {
+    // Validate password strength (simple check for public registration)
+    if (passWord.length < 6 || passWord.length > 36) {
       ctx.status = 400;
-      ctx.body = { error: $t("TXT_CODE_router.user.passwordCheck") };
+      ctx.body = { error: $t("TXT_CODE_router.user.passwordLength") as string };
       return;
     }
     

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import CardPanel from "@/components/CardPanel.vue";
 import { t } from "@/lang/i18n";
-import { getCardKeys, createCardKey, deleteCardKey } from "@/services/apis";
+import { createCardKey, deleteCardKey, getCardKeys } from "@/services/apis";
 import { reportErrorMsg } from "@/tools/validator";
-import { PlusOutlined, DeleteOutlined, KeyOutlined } from "@ant-design/icons-vue";
+import { DeleteOutlined, KeyOutlined, PlusOutlined } from "@ant-design/icons-vue";
 import { message, Modal } from "ant-design-vue";
 import { onMounted, reactive, ref } from "vue";
 
@@ -39,7 +39,7 @@ const createForm = reactive({
     cpuLimit: 0,
     instanceName: "My Server"
   },
-  expiredAt: "",
+  expiredAt: undefined as any,
   remarks: ""
 });
 
@@ -81,13 +81,20 @@ const handleCreate = async () => {
   if (!createForm.name.trim()) {
     return message.error(t("TXT_CODE_cardKey.enterName"));
   }
+  if (!createForm.expiredAt) {
+    return message.error(t("TXT_CODE_cardKey.enterExpiredAt"));
+  }
   try {
+    const expiredAtStr = typeof createForm.expiredAt === "object"
+      ? (createForm.expiredAt as any).format("YYYY-MM-DD")
+      : String(createForm.expiredAt);
     await createKey({
       data: {
         name: createForm.name,
         config: createForm.config,
         duration: createForm.duration,
         maxUsage: createForm.maxUsage,
+        expiredAt: expiredAtStr,
         remarks: createForm.remarks
       }
     });
@@ -175,6 +182,9 @@ onMounted(() => {
         </a-form-item>
         <a-form-item :label="t('TXT_CODE_cardKey.maxUsage')">
           <a-input-number v-model:value="createForm.maxUsage" :min="1" :max="9999" />
+        </a-form-item>
+        <a-form-item :label="t('TXT_CODE_cardKey.expiredAt')">
+          <a-date-picker v-model:value="createForm.expiredAt" style="width: 100%" />
         </a-form-item>
         <a-form-item :label="t('TXT_CODE_cardKey.processType')">
           <a-select v-model:value="createForm.config.processType">

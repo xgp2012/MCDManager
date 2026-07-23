@@ -389,6 +389,7 @@ export const createCardKey = useDefineApi<
       config: any;
       duration: number;
       maxUsage: number;
+      expiredAt: string;
       remarks: string;
     };
   },
