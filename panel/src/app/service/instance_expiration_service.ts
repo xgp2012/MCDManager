@@ -3,7 +3,7 @@ import { logger } from "./log";
 import RemoteServiceSubsystem from "./remote_service";
 import RemoteRequest from "./remote_command";
 import userSystem from "./user_service";
-import { schedule } from "node-schedule";
+import * as schedule from "node-schedule";
 
 const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
 

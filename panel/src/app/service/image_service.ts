@@ -62,7 +62,7 @@ class ImageSubsystem {
     if (config.icon !== undefined) template.icon = config.icon;
     if (config.category) template.category = config.category;
     if (config.defaultConfig)
-      template.defaultConfig = { ...template.defaultConfig, ...config.defaultConfig };
+      template.defaultConfig = { ...template.defaultConfig, ...config.defaultConfig } as typeof template.defaultConfig;
     if (config.isActive !== undefined) template.isActive = config.isActive;
     if (config.sortOrder !== undefined) template.sortOrder = config.sortOrder;
 
