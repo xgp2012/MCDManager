@@ -1,12 +1,22 @@
-name: Release Build
+name: Build & Release
 
 on:
-  release:
-    types: [published]
+  push:
+    branches: [master, main]
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      create_release:
+        description: "Create GitHub Release"
+        required: true
+        default: false
+        type: boolean
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      has_release: ${{ steps.check_release.outputs.has_release }}
 
     steps:
       - uses: actions/checkout@v4
@@ -46,25 +56,78 @@ jobs:
           wget https://nodejs.org/download/release/latest-v20.x/win-x64/node.exe -O dist_windows/daemon/node_app.exe
           cp dist_windows/daemon/node_app.exe dist_windows/web/node_app.exe
 
-      - name: Create archive
+      - name: Create archive (Linux)
         run: |
           mv dist_linux/ mcdmanager/
           tar czf mcdmanager_linux_release.tar.gz mcdmanager/
-          tar --exclude='mcdmanager/daemon' --exclude='mcdmanager/start-daemon.sh' -czf mcdmanager_linux_web_only_release.tar.gz mcdmanager/
-          tar --exclude='mcdmanager/web' --exclude='mcdmanager/start-web.sh' -czf mcdmanager_linux_daemon_only_release.tar.gz mcdmanager/
+          tar --exclude="mcdmanager/daemon" --exclude="mcdmanager/start-daemon.sh" \
+            -czf mcdmanager_linux_web_only_release.tar.gz mcdmanager/
+          tar --exclude="mcdmanager/web" --exclude="mcdmanager/start-web.sh" \
+            -czf mcdmanager_linux_daemon_only_release.tar.gz mcdmanager/
           rm -rf mcdmanager/
+
+      - name: Create archive (Windows)
+        run: |
           mv dist_windows/ mcdmanager/
           zip -r mcdmanager_windows_release.zip mcdmanager/
-          zip -r mcdmanager_windows_web_only_release.zip mcdmanager/ -x "mcdmanager/daemon/*"
-          zip -r mcdmanager_windows_daemon_only_release.zip mcdmanager/ -x "mcdmanager/web/*"
+          zip -r mcdmanager_windows_web_only_release.zip mcdmanager/ \
+            -x "mcdmanager/daemon/*" -x "mcdmanager/start-daemon*"
+          zip -r mcdmanager_windows_daemon_only_release.zip mcdmanager/ \
+            -x "mcdmanager/web/*" -x "mcdmanager/start-web*"
+          rm -rf mcdmanager/
 
-      - name: Upload assets to release
-        uses: softprops/action-gh-release@v2
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
         with:
-          files: |
-            mcdmanager_windows_release.zip
-            mcdmanager_windows_web_only_release.zip
-            mcdmanager_windows_daemon_only_release.zip
+          name: mcdmanager-build
+          path: |
             mcdmanager_linux_release.tar.gz
             mcdmanager_linux_web_only_release.tar.gz
             mcdmanager_linux_daemon_only_release.tar.gz
+            mcdmanager_windows_release.zip
+            mcdmanager_windows_web_only_release.zip
+            mcdmanager_windows_daemon_only_release.zip
+          retention-days: 90
+
+      - name: Check if we should create a release
+        id: check_release
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" && "${{ github.ref_name }}" == v* ]]; then
+            echo "has_release=true" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.create_release }}" == "true" ]]; then
+            echo "has_release=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_release=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create GitHub Release
+        if: steps.check_release.outputs.has_release == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          name: MCDManager ${{ github.ref_name }}
+          body: |
+            ## MCDManager ${{ github.ref_name }}
+
+            自动构建发布。
+
+            ### 安装方法
+
+            **Linux 一键安装:**
+            ```bash
+            sudo su -c "wget -qO- https://raw.githubusercontent.com/xgp2012/MCDManager/master/prod-scripts/linux/install_mcdm.sh | bash"
+            ```
+
+            **手动安装:**
+            1. 下载 `mcdmanager_linux_release.tar.gz` 或 `mcdmanager_windows_release.zip`
+            2. 解压到服务器
+            3. 运行 `start-web.sh` 和 `start-daemon.sh`
+
+            ### 更新日志
+            ${{ github.event.head_commit.message || '手动触发构建' }}
+          files: |
+            mcdmanager_linux_release.tar.gz
+            mcdmanager_linux_web_only_release.tar.gz
+            mcdmanager_linux_daemon_only_release.tar.gz
+            mcdmanager_windows_release.zip
+            mcdmanager_windows_web_only_release.zip
+            mcdmanager_windows_daemon_only_release.zip

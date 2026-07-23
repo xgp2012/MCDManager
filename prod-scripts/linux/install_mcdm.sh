@@ -14,17 +14,16 @@
 # Target installation directory (can be overridden with --install-dir)
 install_dir="/opt/mcdmanager"
 
-# Primary download URL bas. Full package URL = download_base_url + package_name
-download_base_url="https://cdn.imlazy.ink:233/files/"
-
-# Fallback download URL (can also be a local directory or mirror)
-download_fallback_url="https://github.com/MCSManager/MCSManager/releases/latest/download/mcsmanager_linux_release.tar.gz"
-
 # Name of the release package to download/detect
-# Note: Using the original MCSManager package as base (core structure is identical)
-# MCDManager branding changes are applied at the source level.
-# To use a custom build, publish a release to your GitHub repo and update this URL.
-package_name="mcsmanager_linux_release.tar.gz"
+package_name="mcdmanager_linux_release.tar.gz"
+
+# Primary download URL - MCDManager GitHub Release (custom build)
+# Push a tag like v1.0.0 to trigger GitHub Actions build, which creates a release.
+download_base_url="https://github.com/xgp2012/MCDManager/releases/latest/download/"
+
+# Fallback download URL - Original MCSManager package (same core structure)
+# Used when no MCDManager release has been published yet.
+download_fallback_url="https://github.com/MCSManager/MCSManager/releases/latest/download/mcsmanager_linux_release.tar.gz"
 
 # Node.js version to be installed
 # Keep the leading "v"
@@ -1033,7 +1032,11 @@ install_component() {
   local component="$1"
   local target_path="${install_dir}${component}"
   local backup_data_path="${install_dir}${backup_prefix}${component}"
-  local source_path="${install_tmp_dir}/mcsmanager/${component}"
+  # Support both "mcdmanager/" (MCDManager build) and "mcsmanager/" (original MCSManager package) directory structures
+  local source_path="${install_tmp_dir}/mcdmanager/${component}"
+  if [[ ! -d "$source_path" ]]; then
+    source_path="${install_tmp_dir}/mcsmanager/${component}"
+  fi
 
   cprint cyan bold "安装/更新组件: $component"
 
